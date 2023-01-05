@@ -20,6 +20,15 @@ a {
   text-decoration: none;
 }
 
+.home-link{
+  color: #6b32e1;
+  text-decoration: underline;
+}
+
+.home-link:hover{
+  color: #000000;
+}
+
 small {
   color: #828282;
 }

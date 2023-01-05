@@ -1,82 +1,38 @@
 const express = require("express");
 const app = express();
-const postBank = require('./postBank')
-app.use(express.static('public'))
+const postBank = require('./postBank');
+const postList = require('./view/postList.js');
+const timeAgo = require('node-time-ago');
+
+const morgan = require('morgan');
+app.use(morgan('dev'));
+
+const bodyParser = require('body-parser');
+const postDetails = require("./view/postDetails");
+app.use(bodyParser.json());
+
+app.use(express.static('public'));
 // console.log(postBank.list())
 
 app.get('/',(req,res)=>{
-  const posts = postBank.list()
-  const html = `<!DOCTYPE html>
-  <html>
-  <head>
-    <title>Wizard News</title>
-    <link rel="stylesheet" href="/style.css" />
-  </head>
-  <body>
-    <div class="news-list">
-      <header><img src="/logo.png"/>Wizard News</header>
-      ${posts.map(post => `
-        <div class='news-item'>
-          <p>
-            <span class="news-position">${post.id}. ▲</span>
-            <a href="/posts/${post.id}">${post.title}</a>
-            <small>(by ${post.name})</small>
-          </p>
-          <small class="news-info">
-            ${post.upvotes} upvotes | ${post.date}
-          </small>
-        </div>`
-      ).join('')}
-    </div>
-  </body>
-</html>`
-  
-res.send(html)
+  const posts = postBank.list();
+
+  res.send(postList.viewPosts(posts, timeAgo));
 })
+
 app.get( '/posts/:id', (req, res) => {
   const id = req.params.id;
   const post = postBank.find(id);
   if (!post.id) {
-    // If the post wasn't found, set the HTTP status to 404 and send Not Found HTML
-    res.status(404)
-    const html = `
-    <!DOCTYPE html>
-    <html>
-    <head>
-      <title>Wizard News</title>
-      <link rel="stylesheet" href="/style.css" />
-    </head>
-    <body>
-      <header><img src="/logo.png"/>Wizard News</header>
-      <div class="not-found">
-        <p>Accio Page! 🧙‍♀️ ... Page Not Found</p>
-        <img src="/dumbledore-404.gif" />
-      </div>
-    </body>
-    </html>`
-    res.send(html)
+    res.status(404);
+    res.send(postDetails.noPostFound());
   } else {
-    const html = `<!DOCTYPE html>
-    <html>
-      <head>
-        <title>Wizard News</title>
-        <link rel="stylesheet" href="/style.css" />
-      </head>
-      <body>
-        <header><img src="/logo.png"/>Wizard News</header>
-        <div>
-          <p>${post.title}</p>
-          <p>${post.content}</p>
-          <p>${post.name}</p>
-          <p>${post.date}</p>
-        </div>
-      </body>
-    `
-  res.send(html)
-}})
+    res.send(postDetails.postDetails(post, timeAgo));
+  }
+  })
 
 
-const{ PORT = 1337 } = process.env;
+const { PORT = 1337 } = process.env;
 
 app.listen(PORT, () => {
   console.log(`App listening in port ${PORT}`);
