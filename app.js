@@ -2,13 +2,13 @@ const express = require("express");
 const app = express();
 const postBank = require('./postBank');
 const postList = require('./view/postList.js');
+const postDetails = require("./view/postDetails");
 const timeAgo = require('node-time-ago');
 
 const morgan = require('morgan');
 app.use(morgan('dev'));
 
 const bodyParser = require('body-parser');
-const postDetails = require("./view/postDetails");
 app.use(bodyParser.json());
 
 app.use(express.static('public'));

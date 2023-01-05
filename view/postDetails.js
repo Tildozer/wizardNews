@@ -19,9 +19,10 @@ const postDetails = (post, callback) => {
         </div>
       </body>
     </html>
-    `
+    `;
+
     return html;
-}
+};
 
 const noPostFound = () => {
     const html = `
@@ -39,8 +40,9 @@ const noPostFound = () => {
         </div>
       </body>
     </html>
-    `
+    `;
+    
     return html;
-}
+};
 
 module.exports = { postDetails: postDetails, noPostFound: noPostFound };
